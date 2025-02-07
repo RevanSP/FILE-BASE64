@@ -4,10 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const downloadBase64Btn = document.getElementById('downloadBase64Btn');
     const base64Input = document.getElementById('base64Input');
     const downloadBtn = document.getElementById('downloadBtn');
+    let fileExtension = '';
 
     fileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
+            fileExtension = getFileExtension(file.name);
             downloadBase64Btn.innerHTML = '<span class="loading loading-infinity loading-xs"></span>';
             const reader = new FileReader();
             reader.onload = e => {
@@ -33,6 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Please convert a file to Base64 first.");
         }
     });
+
+    function getFileExtension(fileName) {
+        return fileName.split('.').pop(); 
+    }
 
     function isValidBase64(str) {
         if (!str) return false;
@@ -70,7 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const dataUrl = base64String.startsWith('data:') ? base64String : `data:application/octet-stream;base64,${base64String}`;
-        const extension = getFileExtensionFromMimeType(dataUrl);
+        
+        const extension = fileExtension ? `.${fileExtension}` : getFileExtensionFromMimeType(dataUrl);
         const fileName = `downloaded${extension}`;
         const link = document.createElement('a');
         link.href = dataUrl;
